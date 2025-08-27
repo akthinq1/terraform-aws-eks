@@ -1,0 +1,8 @@
+- name: Roboshop SG and Rules
+  security_groups:
+  - eks_control_palne:
+  - eks_node: 
+  - FRONTEND_ALB:
+  - VPN:
+  - BASTION:
+  
