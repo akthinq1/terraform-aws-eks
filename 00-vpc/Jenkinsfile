@@ -35,5 +35,41 @@ pipeline{
                 }
             }
         }
+
+        // terraform plan
+        stage('plan'){
+            steps{
+                script{
+                    withAWS(credentials: 'aws-auth', region: 'us-east-1'){
+                         sh """
+                            cd 00-vpc
+                            terraform plan
+                        """
+                    }
+
+                }
+            }
+        }
+
+        // terraform apply
+        stage('apply'){
+            input {
+                message "Should we continue?"
+                ok "Yes, we should."
+                submitter "alice,anil"
+            } 
+
+            steps{
+                script{
+                    withAWS(credentials: 'aws-auth', region: 'us-east-1'){
+                         sh """
+                            cd 00-vpc
+                            terraform apply -auto-approve
+                        """
+                    }
+
+                }
+            }
+        }
     }
 }
