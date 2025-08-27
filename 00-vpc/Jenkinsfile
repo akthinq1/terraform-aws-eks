@@ -11,18 +11,18 @@ pipeline{
     }
 
     options{
-
+        timeout(time: 30, unit: 'MINUTES') 
     }
 
-    parameters{
+    // parameters{
 
-    }
+    // }
 
-    stages{
+    stages {
 
         // init terraform using aws creds
         stage('init'){
-            step{
+            steps{
                 script{
                     withAWS(credentials: 'aws-auth', region: 'us-east-1'){
                          sh """
