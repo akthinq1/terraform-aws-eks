@@ -4,6 +4,7 @@
 // stages => inti, plan, apply, Destroy(not mandatory)
 // create downstream for security group => trigger SG
 // propagate, wait in downstream
+// use input before going to create => it's like permission or confirmations
 
 pipeline{
     agent{
@@ -61,11 +62,11 @@ pipeline{
 
         // terraform apply
         stage('apply'){
-            input {
-                message "Should we continue?"
-                ok "Yes, we should."
-                submitter "alice,anil"
-            } 
+            // input {
+            //     message "Should we continue?"
+            //     ok "Yes, we should."
+            //     submitter "alice,anil"
+            // } 
 
             steps{
                 script{
@@ -102,14 +103,14 @@ pipeline{
 
         // create a downstream job
 
-        stage('Trigger Bastion'){
-            steps{
-                script{
-                    build job: '20-bastion-host',
-                        propagate: false, 
-                        wait: false 
-                }
-            }
-        }
+        // stage('Trigger Bastion'){
+        //     steps{
+        //         script{
+        //             build job: '20-bastion-host',
+        //                 propagate: false, 
+        //                 wait: false 
+        //         }
+        //     }
+        // }
     }
 }
