@@ -5,6 +5,7 @@
 // create downstream for security group => trigger SG
 // propagate, wait in downstream
 // use input before going to create => it's like permission or confirmations
+// parallel and sequential triggering
 
 pipeline{
     agent{
@@ -102,15 +103,50 @@ pipeline{
         // }
 
         // create a downstream job
+        // parallel and sequential triggering
+        
+        stage('Bastion ACM ALB EKS'){
+            parallel{
+                stage('Trigger Bastion'){
+                    steps{
+                        script{
+                            build job: '20-bastion-host',
+                            propagate: false, 
+                            wait: false 
+                        }
+                    }
+                }
 
-        // stage('Trigger Bastion'){
-        //     steps{
-        //         script{
-        //             build job: '20-bastion-host',
-        //                 propagate: false, 
-        //                 wait: false 
-        //         }
-        //     }
-        // }
+                stage('Trigger ACM'){
+                    steps{
+                        script{
+                            build job: '60-acm',
+                            propagate: false, 
+                            wait: false 
+                        }
+                    }
+                }
+
+                stage('Trigger EKS'){
+                    steps{
+                        script{
+                            build job: '80-eks',
+                            propagate: false, 
+                            wait: false 
+                        }
+                    }
+                }                
+            }         
+        }
+
+        stage('Trigger ALB'){
+            steps{
+                script{
+                    build job: '70-ingress-alb',
+                    propagate: false, 
+                    wait: false 
+                }
+            }
+        }
     }
 }
