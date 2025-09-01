@@ -1,6 +1,6 @@
-// created pipeline for creating AWS VPC 
-// agetnt, environment
-// options => timeout and ansiColor
+// created pipeline for creating AWS SG
+// agent, environment
+// options => timeout and ansiColor, disableConcurrentBuilds()
 // stages => inti, plan, apply, Destroy(not mandatory)
 // create downstream for security group => trigger SG
 // propagate, wait in downstream
@@ -35,7 +35,7 @@ pipeline{
                 script{
                     withAWS(credentials: 'aws-auth', region: 'us-east-1'){
                          sh """
-                            cd 00-vpc
+                            cd 10-sg
                             terraform init -reconfigure
                         """
                     }
@@ -50,7 +50,7 @@ pipeline{
                 script{
                     withAWS(credentials: 'aws-auth', region: 'us-east-1'){
                          sh """
-                            cd 00-vpc
+                            cd 10-sg
                             terraform plan
                         """
                     }
@@ -71,7 +71,7 @@ pipeline{
                 script{
                     withAWS(credentials: 'aws-auth', region: 'us-east-1'){
                          sh """
-                            cd 00-vpc
+                            cd 10-sg
                             terraform apply -auto-approve
                         """
                     }
@@ -100,14 +100,14 @@ pipeline{
         //     }
         // }
 
-         // create a downstream job
+        // create a downstream job
 
-        stage('Trigger SG'){
+        stage('Trigger Bastion'){
             steps{
                 script{
-                    build job: '10-sg',
-                        propagate: false, // even SG have an any issue or fails to create/job, vpc(upstream job) will not effected
-                        wait: false // vpc will not wait for sg pipeline completion
+                    build job: '20-bastion-host',
+                        propagate: false, 
+                        wait: false 
                 }
             }
         }
